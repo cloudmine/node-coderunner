@@ -1,0 +1,16 @@
+{
+  "name": "cloudmine-node-runner",
+  "version": "0.0.1",
+  "description": "Node.js Custom Code driver based on the spec at:  https://cloudminellc.atlassian.net/wiki/display/PLAT/Configurable+Code+Runner+Protocol+Spec",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "good": "^4.0.0",
+    "good-console": "^2.0.1",
+    "hapi": "^7.5.2"
+  }
+}
