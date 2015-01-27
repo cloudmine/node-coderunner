@@ -1,0 +1,23 @@
+{
+  "author": "CloudMine LLC",
+  "name": "cloudmine-node-coderunner",
+  "description": "A Way to run Node.js apps on CloudMine's Internal platform",
+  "version": "0.1.0",
+  "homepage": "https://cloudmine.me/",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+  },
+  "dependencies": {
+    "boom": "2.6.1",
+    "hapi": "8.1.0"
+  },
+  "devDependencies": {
+    "chai": "1.9.2",
+    "coffee-script": "1.8.0",
+    "mocha": "2.1.0",
+    "supertest": "0.15.0"
+  }
+}
