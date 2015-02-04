@@ -1,39 +1,27 @@
 Hapi = require 'hapi'
 supertest = require 'supertest'
-
 should = require('chai').should()
-Server = require '../../server'
-
+Server = require '../../lib/server'
 
 describe 'Server', ->
 
-  it 'should exist', ->
-    should.exist Server
-
-  it 'should throw an error with no path', ->
-    (-> Server.start() ).should.throw /No Path/
-
-
   describe 'Starting', ->
-
     beforeEach ->
       Server.server = new Hapi.Server()
       Server.server.connection()
 
     it 'should work with a Path', ->
-      Server.start('./test/data/index')
+      Server.start('../test/data/index')
 
     it 'should callback', (done)->
-      Server.start './test/data/index', ->
+      Server.start '../test/data/index', ->
         done()
 
     describe 'API', ->
-
       api = null
       beforeEach (done)->
         Server._names()
-        Server._configure('./test/data/index')
-        Server.start './test/data/index', ->
+        Server.start '../test/data/index', ->
           api = supertest "localhost:#{Server.server.info.port}"
           done()
 
@@ -43,7 +31,9 @@ describe 'Server', ->
             done()
 
       it 'should run the snippet', (done)->
-        Server._configure()
         api.get('/snippet/test2').end (err, res)->
           res.body.should.deep.equal some: 'json'
           done()
+
+  afterEach (done)->
+    Server.server.stop done
