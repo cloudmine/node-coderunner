@@ -4,11 +4,15 @@
   "description": "A Way to run Node.js apps on CloudMine's Internal platform",
   "version": "0.1.0",
   "homepage": "https://cloudmine.me/",
+  "license": "MIT",
+  "main": "bin/server.js",
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/cloudmine/node-coderunner"
   },
   "scripts": {
+    "prepublish": "./node_modules/coffee-script/bin/coffee --output bin --compile lib/",
+    "test": "make test"
   },
   "dependencies": {
     "boom": "2.6.1",
@@ -16,7 +20,7 @@
   },
   "devDependencies": {
     "chai": "1.9.2",
-    "coffee-script": "1.8.0",
+    "coffee-script": "1.9.0",
     "mocha": "2.1.0",
     "supertest": "0.15.0"
   }
