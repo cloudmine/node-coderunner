@@ -1,7 +1,7 @@
 {
-  "author": "CloudMine LLC",
-  "name": "cloudmine-node-coderunner",
-  "description": "A Way to run Node.js apps on CloudMine's Internal platform",
+  "author": "CloudMine Inc.",
+  "name": "cloudmine-extensions",
+  "description": "A Way to run Node.js apps on CloudMine's Internal Platform",
   "version": "0.1.0",
   "homepage": "https://cloudmine.me/",
   "license": "MIT",

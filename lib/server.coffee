@@ -2,12 +2,13 @@
 Hapi = require 'hapi'
 Boom = require 'boom'
 BadRequest = Boom.badRequest
+join = require('path').join
 
 class Server
 
   constructor: ->
     @server = new Hapi.Server()
-    @server.connection()
+    @server.connection(port: 4555)
     @_names()
 
   _names: ->
@@ -18,8 +19,13 @@ class Server
         return reply(BadRequest('Server Has not been started!')) unless @snippetNames
         reply(names: @snippetNames)
 
-  _configure: (path)->
-    @requiredFile = require(path)
+  ###
+  The required path is relative to this module...
+  ###
+  _configure: (context, path)->
+    @requiredFile = context.require(path)
+    console.log 'file', path
+    console.log 'file', @requiredFile
     @snippetNames = Object.keys(@requiredFile)
     @_setupRoutes()
 
@@ -32,9 +38,9 @@ class Server
         return reply(BadRequest('Snippet Not Found!')) unless snippet
         snippet(req, reply)
 
-  start: (path, cb)->
+  start: (context, path, cb)->
     throw Error('No Path Given!') unless path
-    @_configure(path)
+    @_configure(context, path)
     @server.start (err)->
       cb(err) if cb
 

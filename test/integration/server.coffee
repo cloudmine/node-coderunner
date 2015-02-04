@@ -11,17 +11,17 @@ describe 'Server', ->
       Server.server.connection()
 
     it 'should work with a Path', ->
-      Server.start('../test/data/index')
+      Server.start(module, '../data/index')
 
     it 'should callback', (done)->
-      Server.start '../test/data/index', ->
+      Server.start module, '../data/index', ->
         done()
 
     describe 'API', ->
       api = null
       beforeEach (done)->
         Server._names()
-        Server.start '../test/data/index', ->
+        Server.start module, '../data/index', ->
           api = supertest "localhost:#{Server.server.info.port}"
           done()
 
