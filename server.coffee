@@ -32,11 +32,11 @@ class Server
         return reply(BadRequest('Snippet Not Found!')) unless snippet
         snippet(req, reply)
 
-  start: (path, cb = ->)->
+  start: (path, cb)->
     throw Error('No Path Given!') unless path
     @_configure(path)
     @server.start =>
       console.log "Server started at #{@server.info.address}:#{@server.info.port}"
-      cb()
+      cb() if cb
 
 module.exports = new Server()

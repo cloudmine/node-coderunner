@@ -1,0 +1,46 @@
+# Node Code-Runner
+
+This package provides the interface for CloudMine's Javascript Server Snippets.
+
+# Usage #
+
+Install the package as a dependency
+
+```
+npm install cloudmine-node --save
+```
+
+Once installed, you can write your code normally. With this library, you can install any module you want, as long as it's in your `package.json` file.
+
+Once your snippets are written, you will have to start to the CloudMine code-runner. The code-runner automatically fields requests to your code, and will call the appropriate snippet.
+
+To start the coderunner, do:
+
+```js
+
+var CodeRunner = require('cloudmine-node');
+
+CodeRunner.start('./index.js', function() {
+	console.log('Ready to go!');
+});
+
+```
+
+`.start` takes a path to a file, and expects to get a Node.js file that has exported modules in the form of an object. Each module key will be used as the name of the snippet (and is required), and the value should be of the form: `function(req, reply)`.
+
+Reply is the method completion handler. You should call `reply(anything)` to finish the method and return `anything`.
+
+## Example ##
+
+To see this fully in action, we have a snippet base setup [here](https://github.com/). You can fork or clone the example and see how it works. Right out of the box you can deploy it to CloudMine and run the snippet.
+
+
+## Deeper ##
+
+When you call `.start`, the CloudMine Code Runner is creating an HTTP server that will handle requests for your application automatically. This server is started on port `80`, so you should not use that port.
+
+When you execute the snippet from CloudMine, the HTTP request is forwarded to your snippet. We use [Hapi]() to handle the request. Rather than pass in a subset of functionality, we send your snippet the entire Request object ([docs](http://hapijs.com/api/#request-object)). The reply interface is also the same, ([docs](http://hapijs.com/api/#reply-interface)), which means anything you can pass back to Hapi you can pass back here.
+
+## Upgrading ##
+
+Each version of `cloudmine-node` will lockdown the version of Hapi, so you can be sure the interface won't change underneath you. However, Hapi [moves](https://github.com/hapijs/hapi/blob/master/CHANGELOG.md) very quickly, and future versions may break your application, so upgrade carefully. CloudMine-Node follows [Semantic Versioning](http://semver.org/), so upgrades to Hapi that are not back backwards compatible will also result in a major version incrementing.
