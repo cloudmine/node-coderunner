@@ -7,7 +7,7 @@ class Server
 
   constructor: ->
     @server = new Hapi.Server()
-    @server.connection(port: 80)
+    @server.connection()
     @_names()
 
   _names: ->
@@ -27,7 +27,7 @@ class Server
     @server.route
       method: ['PUT', 'POST', 'GET']
       path: '/snippet/{name}'
-      handler: (req, reply)->
+      handler: (req, reply)=>
         snippet = @requiredFile[req.params.name]
         return reply(BadRequest('Snippet Not Found!')) unless snippet
         snippet(req, reply)
@@ -35,8 +35,7 @@ class Server
   start: (path, cb)->
     throw Error('No Path Given!') unless path
     @_configure(path)
-    @server.start =>
-      console.log "Server started at #{@server.info.address}:#{@server.info.port}"
-      cb() if cb
+    @server.start (err)->
+      cb(err) if cb
 
 module.exports = new Server()
