@@ -8,7 +8,7 @@ class Server
 
   constructor: ->
     @server = new Hapi.Server()
-    @server.connection(port: 4555)
+    @server.connection(process.env.PORT or 4545)
     @_names()
 
   _names: ->
