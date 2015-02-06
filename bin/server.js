@@ -15,7 +15,8 @@
     function Server() {
       this.server = new Hapi.Server();
       this.server.connection({
-        port: 4555
+        host: '0.0.0.0',
+        port: process.env.PORT || 4545
       });
       this._names();
     }
@@ -72,11 +73,14 @@
         throw Error('No Path Given!');
       }
       this._configure(context, path);
-      return this.server.start(function(err) {
-        if (cb) {
-          return cb(err);
-        }
-      });
+      return this.server.start((function(_this) {
+        return function(err) {
+          console.log('Server started at: ' + _this.server.info.uri);
+          if (cb) {
+            return cb(err);
+          }
+        };
+      })(this));
     };
 
     return Server;
