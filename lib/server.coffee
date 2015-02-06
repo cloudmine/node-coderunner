@@ -41,7 +41,8 @@ class Server
   start: (context, path, cb)->
     throw Error('No Path Given!') unless path
     @_configure(context, path)
-    @server.start (err)->
+    @server.start (err)=>
+      console.log 'Server started at: ' + @server.info.uri
       cb(err) if cb
 
 module.exports = new Server()
