@@ -17,7 +17,7 @@ class Server
       path: '/names'
       handler: (req, reply)=>
         return reply(BadRequest('Server Has not been started!')) unless @snippetNames
-        reply(names: @snippetNames)
+        reply(@snippetNames)
 
   ###
   The required path is relative to this module...

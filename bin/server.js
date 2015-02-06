@@ -30,9 +30,7 @@
             if (!_this.snippetNames) {
               return reply(BadRequest('Server Has not been started!'));
             }
-            return reply({
-              names: _this.snippetNames
-            });
+            return reply(_this.snippetNames);
           };
         })(this)
       });
