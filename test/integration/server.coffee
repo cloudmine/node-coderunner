@@ -31,7 +31,7 @@ describe 'Server', ->
             done()
 
       it 'should run the snippet', (done)->
-        api.get('/snippet/test2').end (err, res)->
+        api.get('/code/test2').end (err, res)->
           res.body.should.deep.equal some: 'json'
           done()
 

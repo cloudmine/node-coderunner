@@ -32,7 +32,7 @@ class Server
   _setupRoutes: ->
     @server.route
       method: ['PUT', 'POST', 'GET']
-      path: '/snippet/{name}'
+      path: '/code/{name}'
       handler: (req, reply)=>
         snippet = @requiredFile[req.params.name]
         return reply(BadRequest('Snippet Not Found!')) unless snippet

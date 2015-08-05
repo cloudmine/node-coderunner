@@ -1,5 +1,5 @@
 {
-  "author": "CloudMine Inc.",
+  "author": "CloudMine, Inc.",
   "name": "cloudmine-servercode",
   "description": "A Way to run Node.js apps on CloudMine's Internal Platform",
   "version": "0.1.0",
@@ -15,8 +15,8 @@
     "test": "make test"
   },
   "dependencies": {
-    "boom": "2.6.1",
-    "hapi": "8.1.0"
+    "boom": "2.8.0",
+    "hapi": "8.8.1"
   },
   "devDependencies": {
     "chai": "1.9.2",
