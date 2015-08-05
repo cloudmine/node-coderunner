@@ -15,8 +15,8 @@
     "test": "make test"
   },
   "dependencies": {
-    "boom": "2.6.1",
-    "hapi": "8.1.0"
+    "boom": "2.8.0",
+    "hapi": "8.8.1"
   },
   "devDependencies": {
     "chai": "1.9.2",
