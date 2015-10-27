@@ -1,5 +1,7 @@
 # Node Code-Runner
 
+![Travis-CI](https://travis-ci.org/cloudmine/node-coderunner.svg)
+
 This package provides the interface for CloudMine's Javascript Server Snippets.
 
 # Usage #
