@@ -1,3 +1,9 @@
+'use strict'
+#
+# CloudMine, Inc
+# 2015
+#
+
 should = require('chai').should()
 Server = require '../../lib/server'
 

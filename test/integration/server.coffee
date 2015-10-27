@@ -1,5 +1,10 @@
-Hapi = require 'hapi'
-supertest = require 'supertest'
+'use strict'
+#
+# CloudMine, Inc
+# 2015
+#
+
+Hapi = require 'hapi-lts'
 should = require('chai').should()
 Server = require '../../lib/server'
 
@@ -22,17 +27,25 @@ describe 'Server', ->
       beforeEach (done)->
         Server._names()
         Server.start module, '../data/index', ->
-          api = supertest "localhost:#{Server.server.info.port}"
           done()
 
       it 'should give the names', (done)->
-          api.get('/names').end (err, res)->
-            res.body.should.deep.equal names: ['test1', 'test2']
-            done()
+
+        req =
+          method: 'GET'
+          url: '/names'
+
+        Server.server.inject req, (res)->
+          res.result.should.deep.equal ['test1', 'test2']
+          done()
 
       it 'should run the snippet', (done)->
-        api.get('/code/test2').end (err, res)->
-          res.body.should.deep.equal some: 'json'
+        req =
+          method: 'GET'
+          url: '/code/test2'
+
+        Server.server.inject req, (res)->
+          res.result.should.deep.equal some: 'json'
           done()
 
   afterEach (done)->
