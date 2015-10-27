@@ -2,7 +2,7 @@
   "author": "CloudMine, Inc.",
   "name": "cloudmine-servercode",
   "description": "A Way to run Node.js apps on CloudMine's Internal Platform",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "homepage": "https://cloudmine.me/",
   "license": "MIT",
   "main": "bin/server.js",
@@ -11,17 +11,35 @@
     "url": "https://github.com/cloudmine/node-coderunner"
   },
   "scripts": {
-    "prepublish": "./node_modules/coffee-script/bin/coffee --output bin --compile lib/",
+    "prepublish": "coffee -o bin -c lib/*.coffee",
     "test": "make test"
   },
+  "config": {
+    "blanket": {
+      "pattern": "lib",
+      "shortnames": true,
+      "data-cover-reporter-options": {
+        "shortnames": true
+      },
+      "data-cover-never": "node_modules",
+      "loader": "./node-loaders/coffee-script"
+    },
+    "travis-cov": {
+      "threshold": 90
+    }
+  },
   "dependencies": {
-    "boom": "2.8.0",
-    "hapi": "8.8.1"
+    "boom": "2.10.0",
+    "hapi-lts": "9.4.2"
   },
   "devDependencies": {
-    "chai": "1.9.2",
-    "coffee-script": "1.9.0",
-    "mocha": "2.1.0",
-    "supertest": "0.15.0"
+    "blanket-node": "2.0.0",
+    "chai": "3.4.0",
+    "coffee-script": "1.10.0",
+    "coffeelint": "1.13.0",
+    "coffeelint-use-strict": "1.0.0",
+    "david": "6.4.0",
+    "mocha": "2.3.3",
+    "travis-cov": "0.2.5"
   }
 }
