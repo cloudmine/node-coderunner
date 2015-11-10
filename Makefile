@@ -17,6 +17,8 @@ integration:
 	./node_modules/mocha/bin/_mocha \
 	--compilers coffee:coffee-script/register \
 	./test/integration
+security:
+	./node_modules/.bin/snyk test
 
 test:
 	$(MAKE) unit
@@ -24,7 +26,7 @@ test:
 	$(MAKE) travis-cov
 	$(MAKE) lint
 	$(MAKE) check-dependencies
-
+	$(MAKE) security
 
 compile:
 	./node_modules/coffee-script/bin/coffee -o bin -c lib/*.coffee
