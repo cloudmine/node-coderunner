@@ -3,7 +3,7 @@
   'use strict';
   var Hapi, Server, badRequest, join;
 
-  Hapi = require('hapi-lts');
+  Hapi = require('hapi');
 
   badRequest = require('boom').badRequest;
 

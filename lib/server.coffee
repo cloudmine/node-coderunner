@@ -4,7 +4,7 @@
 # 2015
 #
 
-Hapi = require 'hapi-lts'
+Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
 

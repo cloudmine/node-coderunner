@@ -4,7 +4,7 @@
 # 2015
 #
 
-Hapi = require 'hapi-lts'
+Hapi = require 'hapi'
 should = require('chai').should()
 Server = require '../../lib/server'
 
