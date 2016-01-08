@@ -16,6 +16,9 @@
         host: '0.0.0.0',
         port: process.env.PORT || 4545
       });
+      this.server.on('request-error', function(req, err) {
+        return console.log('Internal Server Error:', err);
+      });
       this._names();
     }
 

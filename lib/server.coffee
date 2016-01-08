@@ -13,6 +13,10 @@ class Server
   constructor: ->
     @server = new Hapi.Server()
     @server.connection(host: '0.0.0.0', port: process.env.PORT or 4545)
+
+    @server.on 'request-error', (req, err)->
+      console.log 'Internal Server Error:', err
+
     @_names()
 
   _names: ->
