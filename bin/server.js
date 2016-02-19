@@ -51,7 +51,7 @@
     Server.prototype._setupRoutes = function() {
       return this.server.route({
         method: ['PUT', 'POST', 'GET'],
-        path: '/code/{name}',
+        path: '/v1/app/{appid}/run/{name}',
         handler: (function(_this) {
           return function(req, reply) {
             var snippet;
