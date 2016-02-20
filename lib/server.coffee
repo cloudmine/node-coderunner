@@ -43,6 +43,7 @@ class Server
       handler: (req, reply)=>
         snippet = @requiredFile[req.params.name]
         return reply({errors: ["API Key invalid"]})  unless data.goodApiKey req
+        data.add(req)
         return reply(badRequest('Snippet Not Found!')) unless snippet
         snippet(req, reply)
 

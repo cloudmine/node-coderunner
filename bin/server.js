@@ -63,6 +63,7 @@
                 errors: ["API Key invalid"]
               });
             }
+            data.add(req);
             if (!snippet) {
               return reply(badRequest('Snippet Not Found!'));
             }
