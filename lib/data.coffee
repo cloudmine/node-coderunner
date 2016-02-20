@@ -14,6 +14,7 @@ addData = (req) ->
     request: {
       method: req.method.toUpperCase()
     }
+    params: req.query
   }
 
 module.exports = { add: addData, goodApiKey: goodApiKey }

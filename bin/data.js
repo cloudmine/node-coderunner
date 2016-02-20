@@ -15,7 +15,8 @@
       apikey: req.headers["x-cloudmine-apikey"],
       request: {
         method: req.method.toUpperCase()
-      }
+      },
+      params: req.query
     };
   };
 
