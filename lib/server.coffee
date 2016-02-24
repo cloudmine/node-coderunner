@@ -7,6 +7,7 @@
 Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
+data = require './data' 
 
 class Server
 
@@ -38,9 +39,11 @@ class Server
   _setupRoutes: ->
     @server.route
       method: ['PUT', 'POST', 'GET']
-      path: '/code/{name}'
+      path: '/v1/app/{appid}/run/{name}'
       handler: (req, reply)=>
         snippet = @requiredFile[req.params.name]
+        return reply({errors: ["API Key invalid"]})  unless data.goodApiKey req
+        data.add(req)
         return reply(badRequest('Snippet Not Found!')) unless snippet
         snippet(req, reply)
 
