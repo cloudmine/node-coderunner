@@ -49,8 +49,27 @@
     };
 
     Server.prototype._setupRoutes = function() {
+      this.server.route({
+        method: ['PUT', 'POST'],
+        path: '/code/{name}',
+        config: {
+          payload: {
+            maxBytes: 20000000
+          }
+        },
+        handler: (function(_this) {
+          return function(req, reply) {
+            var snippet;
+            snippet = _this.requiredFile[req.params.name];
+            if (!snippet) {
+              return reply(badRequest('Snippet Not Found!'));
+            }
+            return snippet(req, reply);
+          };
+        })(this)
+      });
       return this.server.route({
-        method: ['PUT', 'POST', 'GET'],
+        method: ['GET'],
         path: '/code/{name}',
         handler: (function(_this) {
           return function(req, reply) {
