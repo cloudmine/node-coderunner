@@ -54,7 +54,7 @@
       if (isTruthy(process.env['LOCAL_TESTING'])) {
         return this.server.route({
           method: ['PUT', 'POST', 'GET'],
-          path: '/run/{name}',
+          path: '/v1/app/{appid}/run/{name}',
           handler: (function(_this) {
             return function(old_req, reply) {
               var req, snippet;

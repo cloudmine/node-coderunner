@@ -40,7 +40,7 @@ class Server
     if isTruthy process.env['LOCAL_TESTING']
       @server.route
         method: ['PUT', 'POST', 'GET']
-        path: '/run/{name}'
+        path: '/v1/app/{appid}/run/{name}'
         handler: (old_req, reply)=>
           snippet = @requiredFile[old_req.params.name]
           return reply(badRequest('Snippet Not Found!')) unless snippet
