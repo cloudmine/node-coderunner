@@ -47,7 +47,7 @@ create = (req) ->
         request:
           method: req.method.toUpperCase()
           'content-type': req.headers['content-type']
-    session: # TODO: figure out why these aren't populating
+    session:
       api_key: req.headers['x-cloudmine-apikey'] or req.query.apikey
       app_id: req.params.appid
       session_token: req.headers['x-cloudmine-sessiontoken'] or null
