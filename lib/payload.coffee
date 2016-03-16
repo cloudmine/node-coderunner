@@ -34,7 +34,7 @@ getExecutionParams = (reqQuery, reqPayload) ->
   execParams
 
 create = (req) ->
-  reqPayload = getReqPayload req, req.headers['content-type']
+  reqPayload = getReqPayload req.payload, req.headers['content-type']
   params = getExecutionParams req.query, reqPayload
 
   deisRequestBody =
