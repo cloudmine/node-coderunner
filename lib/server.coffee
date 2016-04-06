@@ -7,6 +7,7 @@
 Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
+{isTruthy: isTruthy, create: createReqPayload} = require './payload'
 
 class Server
 
@@ -36,13 +37,23 @@ class Server
     @_setupRoutes()
 
   _setupRoutes: ->
-    @server.route
-      method: ['PUT', 'POST', 'GET']
-      path: '/code/{name}'
-      handler: (req, reply)=>
-        snippet = @requiredFile[req.params.name]
-        return reply(badRequest('Snippet Not Found!')) unless snippet
-        snippet(req, reply)
+    if isTruthy process.env['LOCAL_TESTING']
+      @server.route
+        method: ['PUT', 'POST', 'GET']
+        path: '/v1/app/{appid}/run/{name}'
+        handler: (old_req, reply)=>
+          snippet = @requiredFile[old_req.params.name]
+          return reply(badRequest('Snippet Not Found!')) unless snippet
+          req = createReqPayload old_req
+          snippet(req, reply)
+    else
+      @server.route
+        method: ['PUT', 'POST', 'GET']
+        path: '/code/{name}'
+        handler: (req, reply)=>
+          snippet = @requiredFile[req.params.name]
+          return reply(badRequest('Snippet Not Found!')) unless snippet
+          snippet(req, reply)
 
   start: (context, path, cb)->
     throw Error('No Path Given!') unless path
