@@ -1,8 +1,10 @@
 'use strict'
+
 #
 # CloudMine, Inc
 # 2016
 #
+
 _ = require 'lodash'
 
 DEFAULT_TIMEOUT_MS = 30000
@@ -15,7 +17,8 @@ getReqPayload = (origReqPayload, contentType) ->
   # json or form payloads will get merged into params
   if contentType?.indexOf('application/json') is 0 or
       contentType?.indexOf('application/x-www-form-urlencoded') is 0 or
-      contentType?.indexOf('multipart/form-data') is 0
+      contentType?.indexOf('multipart/form-data') is 0 or
+      contentType?.indexOf('text/plain') is 0
     reqPayload = origReqPayload
   reqPayload = {} unless reqPayload
   reqPayload
@@ -29,7 +32,7 @@ getExecutionParams = (reqQuery, reqPayload) ->
       catch e
         execParams = reqQuery.params #as handled in platform
   else
-    execParams = _.assign {}, reqPayload, reqQuery
+    execParams = _.assign {}, if _.isObject(reqPayload) then reqPayload else {}, reqQuery
     delete execParams.apikey if execParams.apikey
   execParams
 
@@ -51,12 +54,12 @@ create = (req) ->
       api_key: req.headers['x-cloudmine-apikey'] or req.query.apikey
       app_id: req.params.appid
       session_token: req.headers['x-cloudmine-sessiontoken'] or null
-#      user_id: snippetConfig.userId -- needs platform request
+      user_id: null #snippetConfig.userId -- needs platform request
     params: if _.isEmpty(params) then null else params
     config:
       async: isTruthy req.query.async
-#      timeout: getExecTimeout snippetConfig.timeout -- needs platform request
-#      version: if snippetConfig.backend_version then parseInt(snippetConfig.backend_version) else DEFAULT_BACKEND_VERSION -- needs platform request
+      timeout: 30 #getExecTimeout snippetConfig.timeout -- needs platform request
+      version: 2 #if snippetConfig.backend_version then parseInt(snippetConfig.backend_version) else DEFAULT_BACKEND_VERSION -- needs platform request
       type: 'post' 
     code: undefined 
 #  deisRequestBody.response.body = a.platformResult if a.platformResult -- requires platform request
