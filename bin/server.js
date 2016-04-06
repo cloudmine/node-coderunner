@@ -52,8 +52,28 @@
 
     Server.prototype._setupRoutes = function() {
       if (isTruthy(process.env['LOCAL_TESTING'])) {
+        this.server.route({
+          method: ['PUT', 'POST'],
+          path: '/v1/app/{appid}/run/{name}',
+          config: {
+            payload: {
+              maxBytes: 20000000
+            }
+          },
+          handler: (function(_this) {
+            return function(old_req, reply) {
+              var req, snippet;
+              snippet = _this.requiredFile[old_req.params.name];
+              if (!snippet) {
+                return reply(badRequest('Snippet Not Found!'));
+              }
+              req = createReqPayload(old_req);
+              return snippet(req, reply);
+            };
+          })(this)
+        });
         return this.server.route({
-          method: ['PUT', 'POST', 'GET'],
+          method: ['GET'],
           path: '/v1/app/{appid}/run/{name}',
           handler: (function(_this) {
             return function(old_req, reply) {
@@ -68,8 +88,27 @@
           })(this)
         });
       } else {
+        this.server.route({
+          method: ['PUT', 'POST'],
+          path: '/code/{name}',
+          config: {
+            payload: {
+              maxBytes: 20000000
+            }
+          },
+          handler: (function(_this) {
+            return function(req, reply) {
+              var snippet;
+              snippet = _this.requiredFile[req.params.name];
+              if (!snippet) {
+                return reply(badRequest('Snippet Not Found!'));
+              }
+              return snippet(req, reply);
+            };
+          })(this)
+        });
         return this.server.route({
-          method: ['PUT', 'POST', 'GET'],
+          method: ['GET'],
           path: '/code/{name}',
           handler: (function(_this) {
             return function(req, reply) {

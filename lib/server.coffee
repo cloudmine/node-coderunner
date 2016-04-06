@@ -1,4 +1,5 @@
 'use strict'
+
 #
 # CloudMine, Inc
 # 2015
@@ -39,7 +40,18 @@ class Server
   _setupRoutes: ->
     if isTruthy process.env['LOCAL_TESTING']
       @server.route
-        method: ['PUT', 'POST', 'GET']
+        method: ['PUT', 'POST']
+        path: '/v1/app/{appid}/run/{name}'
+        config:
+          payload:
+            maxBytes: 20000000
+        handler: (old_req, reply)=>
+          snippet = @requiredFile[old_req.params.name]
+          return reply(badRequest('Snippet Not Found!')) unless snippet
+          req = createReqPayload old_req
+          snippet(req, reply)
+      @server.route
+        method: ['GET']
         path: '/v1/app/{appid}/run/{name}'
         handler: (old_req, reply)=>
           snippet = @requiredFile[old_req.params.name]
@@ -48,7 +60,17 @@ class Server
           snippet(req, reply)
     else
       @server.route
-        method: ['PUT', 'POST', 'GET']
+        method: ['PUT', 'POST']
+        path: '/code/{name}'
+        config:
+          payload:
+            maxBytes: 20000000
+        handler: (req, reply)=>
+          snippet = @requiredFile[req.params.name]
+          return reply(badRequest('Snippet Not Found!')) unless snippet
+          snippet(req, reply)
+      @server.route
+        method: ['GET']
         path: '/code/{name}'
         handler: (req, reply)=>
           snippet = @requiredFile[req.params.name]
