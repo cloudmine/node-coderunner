@@ -10,6 +10,8 @@ Hapi = require 'hapi'
 join = require('path').join
 {isTruthy: isTruthy, create: createReqPayload} = require './payload'
 
+MAX_PAYLOAD_BYTES = 20000000
+
 class Server
 
   constructor: ->
@@ -37,45 +39,59 @@ class Server
     @snippetNames = Object.keys(@requiredFile)
     @_setupRoutes()
 
+  ###
+  We need local testing to behave the same as when the code is deployed on the PaaS but
+  normally coderunner does a bunch of work as the middleman. We recreate a lot of that logic
+  here and flip the local switch via an environment variable.
+  ###
   _setupRoutes: ->
     if isTruthy process.env['LOCAL_TESTING']
-      @server.route
-        method: ['PUT', 'POST']
-        path: '/v1/app/{appid}/run/{name}'
-        config:
-          payload:
-            maxBytes: 20000000
-        handler: (old_req, reply)=>
-          snippet = @requiredFile[old_req.params.name]
-          return reply(badRequest('Snippet Not Found!')) unless snippet
-          req = createReqPayload old_req
-          snippet(req, reply)
-      @server.route
-        method: ['GET']
-        path: '/v1/app/{appid}/run/{name}'
-        handler: (old_req, reply)=>
-          snippet = @requiredFile[old_req.params.name]
-          return reply(badRequest('Snippet Not Found!')) unless snippet
-          req = createReqPayload old_req
-          snippet(req, reply)
+      @_setupLocalTestingRoutes()
     else
-      @server.route
-        method: ['PUT', 'POST']
-        path: '/code/{name}'
-        config:
-          payload:
-            maxBytes: 20000000
-        handler: (req, reply)=>
-          snippet = @requiredFile[req.params.name]
-          return reply(badRequest('Snippet Not Found!')) unless snippet
-          snippet(req, reply)
-      @server.route
-        method: ['GET']
-        path: '/code/{name}'
-        handler: (req, reply)=>
-          snippet = @requiredFile[req.params.name]
-          return reply(badRequest('Snippet Not Found!')) unless snippet
-          snippet(req, reply)
+      @_setupDeployedRoutes()
+
+  _setupLocalTestingRoutes: ->
+    # Respond to the same routes that our external api would. f= not currently supported
+    paths = ['/v1/app/{appid}/run/{name}',
+             '/v1/app/{appid}/user/run/{name}',
+             '/v1/app/{appid}/user/{userId}/run/{name}']
+    # The local testing handler replaces the request object with one that conforms to what 
+    # a deployed snippet would expect, simulating the transformations done by coderunner
+    localTestingHandler = (old_req, reply)=>
+      snippet = @requiredFile[old_req.params.name]
+      return reply(badRequest('Snippet Not Found!')) unless snippet
+      req = createReqPayload old_req
+      snippet(req, reply)
+
+    @_setupPutAndPostRoute path, localTestingHandler for path in paths
+    @_setupGetRoute path, localTestingHandler for path in paths
+
+
+  _setupDeployedRoutes: ->
+    path = '/code/{name}'
+    deployedHandler = (req, reply)=>
+      snippet = @requiredFile[req.params.name]
+      return reply(badRequest('Snippet Not Found!')) unless snippet
+      snippet(req, reply)
+
+    @_setupPutAndPostRoute path, deployedHandler
+    @_setupGetRoute path, deployedHandler
+
+
+  _setupPutAndPostRoute: (path, handler) ->
+    @server.route
+      method: ['PUT', 'POST']
+      path: path
+      config:
+        payload:
+          maxBytes: MAX_PAYLOAD_BYTES
+      handler: handler
+
+  _setupGetRoute: (path, handler) ->
+    @server.route
+      method: ['GET']
+      path: path
+      handler: handler
 
   start: (context, path, cb)->
     throw Error('No Path Given!') unless path
