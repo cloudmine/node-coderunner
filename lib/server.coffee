@@ -8,7 +8,7 @@
 Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
-{isTruthy: isTruthy, create: createReqPayload} = require './payload'
+{isTruthy: isTruthy, create: createReqPayload} = require './remote_payload'
 
 MAX_PAYLOAD_BYTES = 20000000
 
@@ -17,11 +17,8 @@ class Server
   constructor: ->
     @server = new Hapi.Server()
     @server.connection(host: '0.0.0.0', port: process.env.PORT or 4545)
-
     @server.on 'request-error', (req, err)->
       console.log 'Internal Server Error:', err
-
-    @_names()
 
   _names: ->
     @server.route
@@ -45,6 +42,7 @@ class Server
   here and flip the local switch via an environment variable.
   ###
   _setupRoutes: ->
+    @_names()
     if isTruthy process.env['LOCAL_TESTING']
       @_setupLocalTestingRoutes()
     else
@@ -55,7 +53,7 @@ class Server
     paths = ['/v1/app/{appid}/run/{name}',
              '/v1/app/{appid}/user/run/{name}',
              '/v1/app/{appid}/user/{userId}/run/{name}']
-    # The local testing handler replaces the request object with one that conforms to what 
+    # The local testing handler replaces the request object with one that conforms to what
     # a deployed snippet would expect, simulating the transformations done by coderunner
     localTestingHandler = (old_req, reply)=>
       snippet = @requiredFile[old_req.params.name]

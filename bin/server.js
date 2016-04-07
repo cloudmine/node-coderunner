@@ -9,7 +9,7 @@
 
   join = require('path').join;
 
-  ref = require('./payload'), isTruthy = ref.isTruthy, createReqPayload = ref.create;
+  ref = require('./remote_payload'), isTruthy = ref.isTruthy, createReqPayload = ref.create;
 
   MAX_PAYLOAD_BYTES = 20000000;
 
@@ -23,7 +23,6 @@
       this.server.on('request-error', function(req, err) {
         return console.log('Internal Server Error:', err);
       });
-      this._names();
     }
 
     Server.prototype._names = function() {
@@ -60,6 +59,7 @@
      */
 
     Server.prototype._setupRoutes = function() {
+      this._names();
       if (isTruthy(process.env['LOCAL_TESTING'])) {
         return this._setupLocalTestingRoutes();
       } else {
