@@ -25,7 +25,6 @@ describe 'Server', ->
     describe 'API', ->
       api = null
       beforeEach (done)->
-        Server._names()
         Server.start module, '../data/index', ->
           done()
 
