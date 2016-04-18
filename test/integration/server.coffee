@@ -1,4 +1,5 @@
 'use strict'
+
 #
 # CloudMine, Inc
 # 2015
@@ -7,7 +8,6 @@
 _ = require 'lodash'
 Hapi = require 'hapi'
 should = require('chai').should()
-#Server = require '../../lib/server'
 
 describe 'Server', ->
   Server = null
@@ -100,7 +100,6 @@ describe 'Server', ->
 
       Server.server.inject req, (res)->
         res.statusCode.should.equal 404
-        #res.result.should.deep.equal some: 'json'
         done()
 
     it 'should 404 on a non-existent snippet', (done)->
