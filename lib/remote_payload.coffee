@@ -40,6 +40,8 @@ create = (req) ->
   reqPayload = getReqPayload req.payload, req.headers['content-type']
   params = getExecutionParams req.query, reqPayload
 
+  # Several changes were necessary when copying this logic from coderunner due to the lack
+  # of a platform request to get configuration for the snippet execution
   deisRequestBody =
     request:
       body: if _.isEmpty(reqPayload) then '' else reqPayload
@@ -54,15 +56,14 @@ create = (req) ->
       api_key: req.headers['x-cloudmine-apikey'] or req.query.apikey
       app_id: req.params.appid
       session_token: req.headers['x-cloudmine-sessiontoken'] or null
-      user_id: '[User ID not populated in local deployments]' #snippetConfig.userId -- needs platform request
+      user_id: '[User ID not populated in local deployments]'
     params: if _.isEmpty(params) then null else params
     config:
       async: isTruthy req.query.async
-      timeout: 30 #getExecTimeout snippetConfig.timeout -- needs platform request
-      version: 2 #if snippetConfig.backend_version then parseInt(snippetConfig.backend_version) else DEFAULT_BACKEND_VERSION -- needs platform request
+      timeout: 30
+      version: 2
       type: 'post'
     code: undefined
-#  deisRequestBody.response.body = a.platformResult if a.platformResult -- requires platform request
   new_req = {payload: deisRequestBody}
   new_req
 
