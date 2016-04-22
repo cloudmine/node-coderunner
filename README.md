@@ -1,8 +1,8 @@
 # Node Code-Runner
 
-![Build Status](https://travis-ci.org/cloudmine/node-coderunner.svg)
+This package provides the raw interface for CloudMine's Javascript Server Snippets.
 
-This package provides the interface for CloudMine's Javascript Server Snippets.
+**Unless you are looking to modify this directly and submit a pull request, you are most likely looking for our local [CLI testing tool](https://github.com/cloudmine/node-snippet-base).**
 
 # Usage #
 
