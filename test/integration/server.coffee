@@ -312,58 +312,6 @@ describe 'Server', ->
           res.result.should.deep.equal expectedPayload
           done()
 
-      it 'should merge query params into the provided params', (done)->
-        requestPayload =
-          bodyParam: 'this is in the body'
-
-        expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request.method = 'POST'
-        expectedPayload.response.body.request.method = 'POST'
-        expectedPayload.request.body = requestPayload
-        expectedPayload.input = requestPayload
-        expectedPayload.params = _.merge({}, requestPayload, queryParam: 'inTheQuery')
-        req =
-          method: 'POST'
-          url: '/v1/app/myappid/run/getPayload?queryParam=inTheQuery'
-          payload: requestPayload
-          headers:
-            'Content-Type': 'application/json'
-            'X-CloudMine-APIKey': 'notagoodwaytogo'
-
-        Server.server.inject req, (res)->
-          try
-            res.result.should.deep.equal expectedPayload
-          catch e
-            done(e)
-            throw e
-          done()
-
-      it 'should not merge body params with query params for f= snippets', (done)->
-        requestPayload =
-          objectKey:
-            someText: 'this is in the body'
-
-        expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request.method = 'POST'
-        expectedPayload.response.body.request.method = 'POST'
-        expectedPayload.request.body = requestPayload
-        expectedPayload.input = requestPayload
-        expectedPayload.params = queryParam: 'inTheQuery'
-        req =
-          method: 'POST'
-          url: '/v1/app/myappid/run/getPayload?f=getPayload&params={queryParam: inTheQuery}'
-          payload: requestPayload
-          headers:
-            'Content-Type': 'application/json'
-            'X-CloudMine-APIKey': 'notagoodwaytogo'
-        Server.server.inject req, (res)->
-          try
-            res.result.should.deep.equal expectedPayload
-          catch e
-            done(e)
-            throw e
-          done()
-
       it 'should permit application/x-www-form-urlencoded', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.request['content-type'] = 'application/x-www-form-urlencoded'
