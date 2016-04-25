@@ -320,7 +320,6 @@ describe 'Server', ->
         expectedPayload.request.method = 'POST'
         expectedPayload.response.body.request.method = 'POST'
         expectedPayload.request.body = requestPayload
-        expectedPayload.input = requestPayload
         expectedPayload.params = _.merge({}, requestPayload, queryParam: 'inTheQuery')
         req =
           method: 'POST'
@@ -347,11 +346,10 @@ describe 'Server', ->
         expectedPayload.request.method = 'POST'
         expectedPayload.response.body.request.method = 'POST'
         expectedPayload.request.body = requestPayload
-        expectedPayload.input = requestPayload
         expectedPayload.params = queryParam: 'inTheQuery'
         req =
           method: 'POST'
-          url: '/v1/app/myappid/run/getPayload?f=getPayload&params={queryParam: inTheQuery}'
+          url: '/v1/app/myappid/run/getPayload?f=getPayload&params={"queryParam": "inTheQuery"}'
           payload: requestPayload
           headers:
             'Content-Type': 'application/json'
