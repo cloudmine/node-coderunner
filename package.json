@@ -30,11 +30,9 @@
   },
   "dependencies": {
     "boom": "2.10.0",
+    "cloudmine": ">=0.9.16",
     "hapi": "9.x.x",
     "lodash": "4.11.1"
-  },
-  "peerDependencies": {
-    "cloudmine": "*"
   },
   "devDependencies": {
     "blanket-node": "2.0.0",
