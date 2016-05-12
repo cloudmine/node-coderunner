@@ -37,7 +37,6 @@ getExecutionParams = (reqQuery, reqPayload) ->
   execParams
 
 getOriginatingIp = (forwardedForIps) ->
-  console.log('CLIENT IPS', forwardedForIps)
   return null unless forwardedForIps
   forwardedIpsArr = forwardedForIps.split(',')
   forwardedIpsArr[0].trim()
