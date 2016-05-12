@@ -76,12 +76,54 @@ describe 'Server', ->
         res.result.should.deep.equal 'Hello'
         done()
 
+    it 'should propogate XUniqueID', (done)->
+      req =
+        method: 'GET'
+        url: '/code/test2'
+        headers:
+          'Content-Type': 'application/json'
+          'X-Unique-ID': 'uniqueid'
+
+      Server.server.inject req, (res)->
+        res.result.should.deep.equal some: 'json'
+        global._$XUniqueID.should.equal 'uniqueid'
+        done()
+
+
+
   describe 'Local Testing API', ->
     before (done)->
       process.env['LOCAL_TESTING'] = true
       Server = require '../../lib/server'
       Server.start module, '../data/index', ->
         done()
+
+
+    it 'should propogate XUniqueID', (done)->
+      req =
+        method: 'GET'
+        url: '/v1/app/myappid/run/test2'
+        headers:
+          'Content-Type': 'application/json'
+          'X-Unique-ID': 'uniqueid'
+
+      Server.server.inject req, (res)->
+        res.result.should.deep.equal some: 'json'
+        global._$XUniqueID.should.equal 'uniqueid'
+        done()
+
+    it 'should not crash if XUniqueID is not provided', (done)->
+      req =
+        method: 'GET'
+        url: '/v1/app/myappid/run/test2'
+        headers:
+          'Content-Type': 'application/json'
+      Server.server.inject req, (res)->
+        res.result.should.deep.equal some: 'json'
+        global._$XUniqueID.should.equal null
+        done()
+
+
 
     it 'should give the names', (done)->
 
@@ -277,7 +319,6 @@ describe 'Server', ->
           headers:
             'Content-Type': 'application/json'
             'X-CloudMine-APIKey': 'notagoodwaytogo'
-
         Server.server.inject req, (res)->
           res.result.should.deep.equal expectedPayload
           done()
@@ -300,7 +341,36 @@ describe 'Server', ->
             'X-CloudMine-APIKey': 'notagoodwaytogo'
 
         Server.server.inject req, (res)->
-          res.result.should.deep.equal expectedPayload
+          try
+            res.result.should.deep.equal expectedPayload
+          catch e
+            done(e)
+            throw e
+          done()
+
+      it 'should not merge body params with query params for f= snippets', (done)->
+        requestPayload =
+          objectKey:
+            someText: 'this is in the body'
+
+        expectedPayload = _.cloneDeep baseExpectedPayload
+        expectedPayload.request.method = 'POST'
+        expectedPayload.response.body.request.method = 'POST'
+        expectedPayload.request.body = requestPayload
+        expectedPayload.params = queryParam: 'inTheQuery'
+        req =
+          method: 'POST'
+          url: '/v1/app/myappid/run/getPayload?f=getPayload&params={"queryParam": "inTheQuery"}'
+          payload: requestPayload
+          headers:
+            'Content-Type': 'application/json'
+            'X-CloudMine-APIKey': 'notagoodwaytogo'
+        Server.server.inject req, (res)->
+          try
+            res.result.should.deep.equal expectedPayload
+          catch e
+            done(e)
+            throw e
           done()
 
       it 'should permit application/x-www-form-urlencoded', (done)->

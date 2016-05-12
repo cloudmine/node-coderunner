@@ -9,6 +9,7 @@ Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
 {isTruthy: isTruthy, create: createReqPayload} = require './remote_payload'
+cloudmine = require 'cloudmine'
 
 MAX_PAYLOAD_BYTES = 20000000
 
@@ -56,6 +57,7 @@ class Server
     # The local testing handler replaces the request object with one that conforms to what
     # a deployed snippet would expect, simulating the transformations done by coderunner
     localTestingHandler = (old_req, reply)=>
+      @propagateXUniqueId(old_req.headers['x-unique-id'])
       snippet = @requiredFile[old_req.params.name]
       return reply(badRequest('Snippet Not Found!')) unless snippet
       req = createReqPayload old_req
@@ -68,6 +70,7 @@ class Server
   _setupDeployedRoutes: ->
     path = '/code/{name}'
     deployedHandler = (req, reply)=>
+      @propagateXUniqueId(req.headers['x-unique-id'])
       snippet = @requiredFile[req.params.name]
       return reply(badRequest('Snippet Not Found!')) unless snippet
       snippet(req, reply)
@@ -96,5 +99,9 @@ class Server
     @_configure(context, path)
     @server.start (err)->
       cb(err) if cb
+
+  propagateXUniqueId: (xUniqueId) ->
+    if xUniqueId and cloudmine?.WebService.setXUniqueID
+      cloudmine.WebService.setXUniqueID(xUniqueId)
 
 module.exports = new Server()
