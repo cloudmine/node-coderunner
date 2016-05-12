@@ -112,6 +112,17 @@ describe 'Server', ->
         global._$XUniqueID.should.equal 'uniqueid'
         done()
 
+    it 'should not crash if XUniqueID is not provided', (done)->
+      req =
+        method: 'GET'
+        url: '/v1/app/myappid/run/test2'
+        headers:
+          'Content-Type': 'application/json'
+      Server.server.inject req, (res)->
+        res.result.should.deep.equal some: 'json'
+        global._$XUniqueID.should.equal null
+        done()
+
 
 
     it 'should give the names', (done)->
