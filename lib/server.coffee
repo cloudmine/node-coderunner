@@ -9,14 +9,7 @@ Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
 {isTruthy: isTruthy, create: createReqPayload} = require './remote_payload'
-
-# 'cloudmine' is a peer dependency. Use it to propagate X-Unique-ID if it
-# was required by the snippet, otherwise ignore
-try
-  cloudmine = require 'cloudmine'
-catch e
-  cloudmine = null
-
+cloudmine = require 'cloudmine'
 
 MAX_PAYLOAD_BYTES = 20000000
 
