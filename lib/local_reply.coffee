@@ -9,8 +9,8 @@
 # the payload with a 'result' property if necessary
 localReply = (reply, unwrapResult) ->
   return reply if unwrapResult
-  () ->
-    if arguments[1]
+  wrappedReply = ->
+    if arguments.length is 2
       err = arguments[0]
       payload = arguments[1]
     else

@@ -51,7 +51,6 @@
 
   getOriginatingIp = function(forwardedForIps) {
     var forwardedIpsArr;
-    console.log('CLIENT IPS', forwardedForIps);
     if (!forwardedForIps) {
       return null;
     }

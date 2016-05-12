@@ -47,7 +47,7 @@ describe 'Server', ->
         url: '/names'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal ['test1', 'test2', 'getPayload']
+        res.result.should.deep.equal ['test1', 'test2', 'getPayload', 'error']
         done()
 
     it 'should run the snippet with GET', (done)->
@@ -91,7 +91,7 @@ describe 'Server', ->
         url: '/names'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal ['test1', 'test2', 'getPayload']
+        res.result.should.deep.equal ['test1', 'test2', 'getPayload', 'error']
         done()
 
     it 'should 404 the deployed API routes', (done)->
@@ -192,6 +192,16 @@ describe 'Server', ->
       Server.server.inject req, (res)->
         res.result.result.should.deep.equal some: 'json'
         done()
+
+    it 'should use the first argument to reply if two are given', (done)->
+      req =
+        method: 'GET'
+        url: '/v1/app/myappid/user/myUser/run/error'
+
+      Server.server.inject req, (res)->
+        res.result.should.equal 'this is an error'
+        done()
+
 
 
     describe 'Payload', ->
@@ -309,7 +319,8 @@ describe 'Server', ->
       it 'should permit application/x-www-form-urlencoded', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request['content-type'] = 'application/x-www-form-urlencoded'
-        expectedPayload.result.response.body.request['content-type'] = 'application/x-www-form-urlencoded'
+        expectedPayload.result.response.body.request['content-type'] =
+            'application/x-www-form-urlencoded'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -367,6 +378,25 @@ describe 'Server', ->
             'X-CloudMine-APIKey': 'notagoodwaytogo'
 
         Server.server.inject req, (res)->
+          res.result.should.deep.equal expectedPayload
+          done()
+
+      it 'should have a response with no `result` property if the
+          unwrap_result query param was specified', (done)->
+        expectedPayload = _.cloneDeep baseExpectedPayload
+        expectedPayload = expectedPayload.result
+        expectedPayload.params =
+          unwrap_result: 't'
+        req =
+          method: 'GET'
+          url: '/v1/app/myappid/run/getPayload?unwrap_result=t'
+          headers:
+            'Content-Type': 'application/json'
+            'X-CloudMine-APIKey': 'notagoodwaytogo'
+
+        Server.server.inject req, (res)->
+          console.log('ACTUAL', res.result)
+          console.log('RESULT', expectedPayload)
           res.result.should.deep.equal expectedPayload
           done()
 

@@ -4,12 +4,13 @@
   var localReply;
 
   localReply = function(reply, unwrapResult) {
+    var wrappedReply;
     if (unwrapResult) {
       return reply;
     }
-    return function() {
+    return wrappedReply = function() {
       var err, payload;
-      if (arguments[1]) {
+      if (arguments.length === 2) {
         err = arguments[0];
         payload = arguments[1];
       } else {

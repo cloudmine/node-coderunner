@@ -61,7 +61,8 @@ class Server
       snippet = @requiredFile[original_req.params.name]
       return reply(badRequest('Snippet Not Found!')) unless snippet
       req = createReqPayload original_req
-      snippet(req, localReply(reply, isTruthy(original_req.query.unwrapResult)))
+      console.log(isTruthy(original_req.query.unwrap_result))
+      snippet(req, localReply(reply, isTruthy(original_req.query.unwrap_result)))
 
     SNIPPET_TIMEOUT = 30000
     @_setupPutAndPostRoute path, localTestingHandler, SNIPPET_TIMEOUT for path in paths

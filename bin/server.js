@@ -80,7 +80,8 @@
             return reply(badRequest('Snippet Not Found!'));
           }
           req = createReqPayload(original_req);
-          return snippet(req, localReply(reply, isTruthy(original_req.query.unwrapResult)));
+          console.log(isTruthy(original_req.query.unwrap_result));
+          return snippet(req, localReply(reply, isTruthy(original_req.query.unwrap_result)));
         };
       })(this);
       SNIPPET_TIMEOUT = 30000;
