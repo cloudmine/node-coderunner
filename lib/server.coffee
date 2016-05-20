@@ -44,6 +44,7 @@ class Server
   ###
   _setupRoutes: ->
     @_names()
+    # CLOUDMINE can be 0 or 1. Set to 1 on remote deployments so we can tell the difference.
     if isTruthy process.env['CLOUDMINE']
       @_setupDeployedRoutes()
     else
@@ -79,6 +80,9 @@ class Server
     @_setupGetRoute path, deployedHandler
 
 
+  # Setup routes that respond to PUT and POST. MAX_PAYLOAD_BYTES set to allow larger uploads.
+  # timeout is set in the local testing case, or null in the live deployed case where timeouts are
+  # controlled by coderunner
   _setupPutAndPostRoute: (path, handler, timeout) ->
     @server.route
       method: ['PUT', 'POST']
@@ -87,9 +91,11 @@ class Server
         payload:
           maxBytes: MAX_PAYLOAD_BYTES
         timeout:
-          server: timeout or null
+          server: timeout or null #null accounts for the live deployed case, where timeout is controlled by coderunner
       handler: handler
 
+  # Setup routes that respond to GET. timeout is set in the local testing case,
+  # or null in the live deployed case where timeouts are controlled by coderunner
   _setupGetRoute: (path, handler, timeout) ->
     @server.route
       method: ['GET']
