@@ -395,8 +395,6 @@ describe 'Server', ->
             'X-CloudMine-APIKey': 'notagoodwaytogo'
 
         Server.server.inject req, (res)->
-          console.log('ACTUAL', res.result)
-          console.log('RESULT', expectedPayload)
           res.result.should.deep.equal expectedPayload
           done()
 
