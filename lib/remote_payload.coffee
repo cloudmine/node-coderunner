@@ -36,6 +36,11 @@ getExecutionParams = (reqQuery, reqPayload) ->
     delete execParams.apikey if execParams.apikey
   execParams
 
+getOriginatingIp = (forwardedForIps) ->
+  return null unless forwardedForIps
+  forwardedIpsArr = forwardedForIps.split(',')
+  forwardedIpsArr[0].trim()
+
 create = (req) ->
   reqPayload = getReqPayload req.payload, req.headers['content-type']
   params = getExecutionParams req.query, reqPayload
@@ -47,6 +52,8 @@ create = (req) ->
       body: if _.isEmpty(reqPayload) then '' else reqPayload
       method: req.method.toUpperCase()
       'content-type': req.headers['content-type']
+      # Special treatment for the local case - if header not specified use the client IP from Hapi
+      originatingIp: getOriginatingIp req.headers['x-forwarded-for'] or req.info.remoteAddress
     response:
       body:
         request:
@@ -64,7 +71,8 @@ create = (req) ->
       version: 2
       type: 'post'
     code: undefined
-  new_req = {payload: deisRequestBody}
+  new_req = _.clone req
+  new_req.payload = deisRequestBody
   new_req
 
 module.exports = {isTruthy: isTruthy, create: create}

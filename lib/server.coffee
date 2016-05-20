@@ -9,6 +9,7 @@ Hapi = require 'hapi'
 {badRequest} = require 'boom'
 join = require('path').join
 {isTruthy: isTruthy, create: createReqPayload} = require './remote_payload'
+localReply = require './local_reply'
 
 MAX_PAYLOAD_BYTES = 20000000
 
@@ -43,10 +44,12 @@ class Server
   ###
   _setupRoutes: ->
     @_names()
-    if isTruthy process.env['LOCAL_TESTING']
-      @_setupLocalTestingRoutes()
-    else
+    # CLOUDMINE should be undefined or 1. Set to 1 on live remote deployments so we can tell the
+    # difference from local user testing.
+    if isTruthy process.env['CLOUDMINE']
       @_setupDeployedRoutes()
+    else
+      @_setupLocalTestingRoutes()
 
   _setupLocalTestingRoutes: ->
     # Respond to the same routes that our external api would. f= not currently supported
@@ -54,15 +57,17 @@ class Server
              '/v1/app/{appid}/user/run/{name}',
              '/v1/app/{appid}/user/{userId}/run/{name}']
     # The local testing handler replaces the request object with one that conforms to what
-    # a deployed snippet would expect, simulating the transformations done by coderunner
-    localTestingHandler = (old_req, reply)=>
-      snippet = @requiredFile[old_req.params.name]
+    # a deployed snippet would expect, simulating the transformations done by coderunner.
+    # It also replaces the reply function for the same purpose.
+    localTestingHandler = (original_req, reply)=>
+      snippet = @requiredFile[original_req.params.name]
       return reply(badRequest('Snippet Not Found!')) unless snippet
-      req = createReqPayload old_req
-      snippet(req, reply)
+      req = createReqPayload original_req
+      snippet(req, localReply(reply, isTruthy(original_req.query.unwrap_result)))
 
-    @_setupPutAndPostRoute path, localTestingHandler for path in paths
-    @_setupGetRoute path, localTestingHandler for path in paths
+    SNIPPET_TIMEOUT = 30000
+    @_setupPutAndPostRoute path, localTestingHandler, SNIPPET_TIMEOUT for path in paths
+    @_setupGetRoute path, localTestingHandler, SNIPPET_TIMEOUT for path in paths
 
 
   _setupDeployedRoutes: ->
@@ -76,20 +81,30 @@ class Server
     @_setupGetRoute path, deployedHandler
 
 
-  _setupPutAndPostRoute: (path, handler) ->
+  # Setup routes that respond to PUT and POST. MAX_PAYLOAD_BYTES set to allow larger uploads.
+  # timeout is set in the local testing case, or null in the live deployed case where timeouts are
+  # controlled by coderunner
+  _setupPutAndPostRoute: (path, handler, timeout) ->
     @server.route
       method: ['PUT', 'POST']
       path: path
       config:
         payload:
           maxBytes: MAX_PAYLOAD_BYTES
+        timeout:
+          server: timeout or null
       handler: handler
 
-  _setupGetRoute: (path, handler) ->
+  # Setup routes that respond to GET. timeout is set in the local testing case,
+  # or null in the live deployed case where timeouts are controlled by coderunner
+  _setupGetRoute: (path, handler, timeout) ->
     @server.route
       method: ['GET']
       path: path
       handler: handler
+      config:
+        timeout:
+          server: timeout or null
 
   start: (context, path, cb)->
     throw Error('No Path Given!') unless path

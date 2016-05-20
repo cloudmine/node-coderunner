@@ -31,6 +31,7 @@ describe 'Server', ->
 
   describe 'Deployed API', ->
     before (done)->
+      process.env['CLOUDMINE'] = 1
       Server = require '../../lib/server'
       Server.start module, '../data/index', ->
         done()
@@ -46,7 +47,7 @@ describe 'Server', ->
         url: '/names'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal ['test1', 'test2', 'getPayload']
+        res.result.should.deep.equal ['test1', 'test2', 'getPayload', 'error']
         done()
 
     it 'should run the snippet with GET', (done)->
@@ -78,7 +79,7 @@ describe 'Server', ->
 
   describe 'Local Testing API', ->
     before (done)->
-      process.env['LOCAL_TESTING'] = true
+      process.env.CLOUDMINE = undefined
       Server = require '../../lib/server'
       Server.start module, '../data/index', ->
         done()
@@ -90,7 +91,7 @@ describe 'Server', ->
         url: '/names'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal ['test1', 'test2', 'getPayload']
+        res.result.should.deep.equal ['test1', 'test2', 'getPayload', 'error']
         done()
 
     it 'should 404 the deployed API routes', (done)->
@@ -117,7 +118,7 @@ describe 'Server', ->
         url: '/v1/app/myappid/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
     it 'should run the snippet with POST', (done)->
@@ -126,7 +127,7 @@ describe 'Server', ->
         url: '/v1/app/myappid/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
     it 'should run the snippet with PUT', (done)->
@@ -135,7 +136,7 @@ describe 'Server', ->
         url: '/v1/app/myappid/run/test1'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal 'Hello'
+        res.result.result.should.deep.equal 'Hello'
         done()
 
     it 'should allow user based GET requests without user id', (done)->
@@ -144,7 +145,7 @@ describe 'Server', ->
         url: '/v1/app/myappid/user/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
     it 'should allow user based POST requests without user id', (done)->
@@ -153,69 +154,81 @@ describe 'Server', ->
         url: '/v1/app/myappid/user/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
-    it 'should allow to user based PUT requests without user id', (done)->
+    it 'should allow user based PUT requests without user id', (done)->
       req =
         method: 'PUT'
         url: '/v1/app/myappid/user/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
-    it 'should allow to user based GET requests with user id', (done)->
+    it 'should allow user based GET requests with user id', (done)->
       req =
         method: 'GET'
         url: '/v1/app/myappid/user/myUser/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
-    it 'should allow to user based POST requests with user id', (done)->
+    it 'should allow user based POST requests with user id', (done)->
       req =
         method: 'POST'
         url: '/v1/app/myappid/user/myUser/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
 
-    it 'should allow to user based PUT requests with user id', (done)->
+    it 'should allow user based PUT requests with user id', (done)->
       req =
         method: 'PUT'
         url: '/v1/app/myappid/user/myUser/run/test2'
 
       Server.server.inject req, (res)->
-        res.result.should.deep.equal some: 'json'
+        res.result.result.should.deep.equal some: 'json'
         done()
+
+    it 'should use the first argument to reply if two are given', (done)->
+      req =
+        method: 'GET'
+        url: '/v1/app/myappid/user/myUser/run/error'
+
+      Server.server.inject req, (res)->
+        res.result.should.equal 'this is an error'
+        done()
+
 
 
     describe 'Payload', ->
       baseExpectedPayload =
-        request:
-          body: ''
-          method: 'GET'
-          'content-type': 'application/json'
-        response:
-          body:
-            request:
-              method: 'GET'
-              'content-type': 'application/json'
-        session:
-          app_id: 'myappid'
-          api_key: 'notagoodwaytogo'
-          session_token: null
-          user_id: '[User ID not populated in local deployments]'
-        params: null
-        config:
-          async: false
-          timeout: 30
-          version: 2
-          type: 'post'
-        code: undefined
+        result:
+          request:
+            body: ''
+            method: 'GET'
+            'content-type': 'application/json'
+            originatingIp: '127.0.0.1'
+          response:
+            body:
+              request:
+                method: 'GET'
+                'content-type': 'application/json'
+          session:
+            app_id: 'myappid'
+            api_key: 'notagoodwaytogo'
+            session_token: null
+            user_id: '[User ID not populated in local deployments]'
+          params: null
+          config:
+            async: false
+            timeout: 30
+            version: 2
+            type: 'post'
+          code: undefined
 
 
       it 'should transform the payload to match the transformations done by coderunner', (done)->
@@ -232,7 +245,7 @@ describe 'Server', ->
 
       it 'should populate the api_key if it was provided in the query string', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.session.api_key = 'queryAPIKey'
+        expectedPayload.result.session.api_key = 'queryAPIKey'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload?apikey=queryAPIKey'
@@ -245,7 +258,7 @@ describe 'Server', ->
 
       it 'should populate the session token if it was provided via header', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.session.session_token = 'mysession'
+        expectedPayload.result.session.session_token = 'mysession'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -266,10 +279,10 @@ describe 'Server', ->
             speakTheTruth: true
 
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request.method = 'POST'
-        expectedPayload.response.body.request.method = 'POST'
-        expectedPayload.request.body = requestPayload
-        expectedPayload.params = requestPayload
+        expectedPayload.result.request.method = 'POST'
+        expectedPayload.result.response.body.request.method = 'POST'
+        expectedPayload.result.request.body = requestPayload
+        expectedPayload.result.params = requestPayload
         req =
           method: 'POST'
           url: '/v1/app/myappid/run/getPayload'
@@ -287,10 +300,10 @@ describe 'Server', ->
           bodyParam: 'this is in the body'
 
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request.method = 'POST'
-        expectedPayload.response.body.request.method = 'POST'
-        expectedPayload.request.body = requestPayload
-        expectedPayload.params = _.merge({}, requestPayload, queryParam: 'inTheQuery')
+        expectedPayload.result.request.method = 'POST'
+        expectedPayload.result.response.body.request.method = 'POST'
+        expectedPayload.result.request.body = requestPayload
+        expectedPayload.result.params = _.merge({}, requestPayload, queryParam: 'inTheQuery')
         req =
           method: 'POST'
           url: '/v1/app/myappid/run/getPayload?queryParam=inTheQuery'
@@ -305,8 +318,9 @@ describe 'Server', ->
 
       it 'should permit application/x-www-form-urlencoded', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request['content-type'] = 'application/x-www-form-urlencoded'
-        expectedPayload.response.body.request['content-type'] = 'application/x-www-form-urlencoded'
+        expectedPayload.result.request['content-type'] = 'application/x-www-form-urlencoded'
+        expectedPayload.result.response.body.request['content-type'] =
+            'application/x-www-form-urlencoded'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -320,8 +334,8 @@ describe 'Server', ->
 
       it 'should permit multipart/form-data', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request['content-type'] = 'multipart/form-data'
-        expectedPayload.response.body.request['content-type'] = 'multipart/form-data'
+        expectedPayload.result.request['content-type'] = 'multipart/form-data'
+        expectedPayload.result.response.body.request['content-type'] = 'multipart/form-data'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -335,8 +349,8 @@ describe 'Server', ->
 
       it 'should permit text/plain', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request['content-type'] = 'text/plain'
-        expectedPayload.response.body.request['content-type'] = 'text/plain'
+        expectedPayload.result.request['content-type'] = 'text/plain'
+        expectedPayload.result.response.body.request['content-type'] = 'text/plain'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -350,11 +364,11 @@ describe 'Server', ->
 
       it 'should leave text/plain payloads as the exact text that was sent', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
-        expectedPayload.request.method = 'POST'
-        expectedPayload.request['content-type'] = 'text/plain'
-        expectedPayload.response.body.request.method = 'POST'
-        expectedPayload.response.body.request['content-type'] = 'text/plain'
-        expectedPayload.request.body = 'the greatest payload EVER'
+        expectedPayload.result.request.method = 'POST'
+        expectedPayload.result.request['content-type'] = 'text/plain'
+        expectedPayload.result.response.body.request.method = 'POST'
+        expectedPayload.result.response.body.request['content-type'] = 'text/plain'
+        expectedPayload.result.request.body = 'the greatest payload EVER'
         req =
           method: 'POST'
           url: '/v1/app/myappid/run/getPayload'
@@ -366,3 +380,21 @@ describe 'Server', ->
         Server.server.inject req, (res)->
           res.result.should.deep.equal expectedPayload
           done()
+
+      it 'should have a response with no `result` property if the
+          unwrap_result query param was specified', (done)->
+        expectedPayload = _.cloneDeep baseExpectedPayload
+        expectedPayload = expectedPayload.result
+        expectedPayload.params =
+          unwrap_result: 't'
+        req =
+          method: 'GET'
+          url: '/v1/app/myappid/run/getPayload?unwrap_result=t'
+          headers:
+            'Content-Type': 'application/json'
+            'X-CloudMine-APIKey': 'notagoodwaytogo'
+
+        Server.server.inject req, (res)->
+          res.result.should.deep.equal expectedPayload
+          done()
+

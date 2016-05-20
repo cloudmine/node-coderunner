@@ -14,8 +14,13 @@ function getPayload(req, reply) {
   reply(req.payload);
 };
 
+function error(req, reply) {
+  reply('this is an error', req.payload);
+};
+
 module.exports = {
   test1: doSomething,
   test2: somethingElse,
-  getPayload: getPayload
+  getPayload: getPayload,
+  error: error
 };
