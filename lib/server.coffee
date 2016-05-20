@@ -44,7 +44,8 @@ class Server
   ###
   _setupRoutes: ->
     @_names()
-    # CLOUDMINE can be 0 or 1. Set to 1 on remote deployments so we can tell the difference.
+    # CLOUDMINE should be undefined or 1. Set to 1 on live remote deployments so we can tell the
+    # difference from local user testing.
     if isTruthy process.env['CLOUDMINE']
       @_setupDeployedRoutes()
     else
@@ -91,7 +92,7 @@ class Server
         payload:
           maxBytes: MAX_PAYLOAD_BYTES
         timeout:
-          server: timeout or null #null accounts for the live deployed case, where timeout is controlled by coderunner
+          server: timeout or null
       handler: handler
 
   # Setup routes that respond to GET. timeout is set in the local testing case,
