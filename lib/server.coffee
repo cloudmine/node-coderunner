@@ -99,7 +99,7 @@ class Server
   # or null in the live deployed case where timeouts are controlled by coderunner
   _setupGetRoute: (path, handler, timeout) ->
     @server.route
-      method: ['GET']
+      method: ['GET', 'DELETE']
       path: path
       handler: handler
       config:

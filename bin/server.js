@@ -80,7 +80,6 @@
             return reply(badRequest('Snippet Not Found!'));
           }
           req = createReqPayload(original_req);
-          console.log(isTruthy(original_req.query.unwrap_result));
           return snippet(req, localReply(reply, isTruthy(original_req.query.unwrap_result)));
         };
       })(this);
@@ -132,7 +131,7 @@
 
     Server.prototype._setupGetRoute = function(path, handler, timeout) {
       return this.server.route({
-        method: ['GET'],
+        method: ['GET', 'DELETE'],
         path: path,
         handler: handler,
         config: {
