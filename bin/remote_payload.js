@@ -66,6 +66,7 @@
       request: {
         body: _.isEmpty(reqPayload) ? '' : reqPayload,
         method: req.method.toUpperCase(),
+        headers: req.headers,
         'content-type': req.headers['content-type'],
         originatingIp: getOriginatingIp(req.headers['x-forwarded-for'] || req.info.remoteAddress)
       },

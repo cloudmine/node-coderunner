@@ -51,6 +51,7 @@ create = (req) ->
     request:
       body: if _.isEmpty(reqPayload) then '' else reqPayload
       method: req.method.toUpperCase()
+      headers: req.headers
       'content-type': req.headers['content-type']
       # Special treatment for the local case - if header not specified use the client IP from Hapi
       originatingIp: getOriginatingIp req.headers['x-forwarded-for'] or req.info.remoteAddress
