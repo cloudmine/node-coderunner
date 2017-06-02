@@ -210,6 +210,11 @@ describe 'Server', ->
           request:
             body: ''
             method: 'GET'
+            headers:
+              'content-type': 'application/json'
+              'x-cloudmine-apikey': 'notagoodwaytogo'
+              'user-agent': 'shot'    # Added by the server request inject
+              'host': '0.0.0.0:4545'  # Added by the server request inject
             'content-type': 'application/json'
             originatingIp: '127.0.0.1'
           response:
@@ -245,7 +250,9 @@ describe 'Server', ->
 
       it 'should populate the api_key if it was provided in the query string', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
+        expectedPayload.result.session.app_id = expectedPayload.result.session.app_id
         expectedPayload.result.session.api_key = 'queryAPIKey'
+        delete expectedPayload.result.request.headers['x-cloudmine-apikey']
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload?apikey=queryAPIKey'
@@ -259,6 +266,7 @@ describe 'Server', ->
       it 'should populate the session token if it was provided via header', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.session.session_token = 'mysession'
+        expectedPayload.result.request.headers['x-cloudmine-sessiontoken'] = 'mysession'
         req =
           method: 'GET'
           url: '/v1/app/myappid/run/getPayload'
@@ -280,6 +288,7 @@ describe 'Server', ->
 
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request.method = 'POST'
+        expectedPayload.result.request.headers['content-length'] = '76'
         expectedPayload.result.response.body.request.method = 'POST'
         expectedPayload.result.request.body = requestPayload
         expectedPayload.result.params = requestPayload
@@ -301,6 +310,7 @@ describe 'Server', ->
 
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request.method = 'POST'
+        expectedPayload.result.request.headers['content-length'] = '35'
         expectedPayload.result.response.body.request.method = 'POST'
         expectedPayload.result.request.body = requestPayload
         expectedPayload.result.params = _.merge({}, requestPayload, queryParam: 'inTheQuery')
@@ -319,6 +329,7 @@ describe 'Server', ->
       it 'should permit application/x-www-form-urlencoded', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request['content-type'] = 'application/x-www-form-urlencoded'
+        expectedPayload.result.request.headers['content-type'] = 'application/x-www-form-urlencoded'
         expectedPayload.result.response.body.request['content-type'] =
             'application/x-www-form-urlencoded'
         req =
@@ -335,6 +346,7 @@ describe 'Server', ->
       it 'should permit multipart/form-data', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request['content-type'] = 'multipart/form-data'
+        expectedPayload.result.request.headers['content-type'] = 'multipart/form-data'
         expectedPayload.result.response.body.request['content-type'] = 'multipart/form-data'
         req =
           method: 'GET'
@@ -350,6 +362,7 @@ describe 'Server', ->
       it 'should permit text/plain', (done)->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request['content-type'] = 'text/plain'
+        expectedPayload.result.request.headers['content-type'] = 'text/plain'
         expectedPayload.result.response.body.request['content-type'] = 'text/plain'
         req =
           method: 'GET'
@@ -366,6 +379,8 @@ describe 'Server', ->
         expectedPayload = _.cloneDeep baseExpectedPayload
         expectedPayload.result.request.method = 'POST'
         expectedPayload.result.request['content-type'] = 'text/plain'
+        expectedPayload.result.request.headers['content-type'] = 'text/plain'
+        expectedPayload.result.request.headers['content-length'] = '25'
         expectedPayload.result.response.body.request.method = 'POST'
         expectedPayload.result.response.body.request['content-type'] = 'text/plain'
         expectedPayload.result.request.body = 'the greatest payload EVER'
