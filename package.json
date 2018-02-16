@@ -29,18 +29,18 @@
     }
   },
   "dependencies": {
-    "boom": "2.10.0",
-    "hapi": "9.x.x",
+    "boom": "7.1.1",
+    "hapi": "16.x.x",
     "lodash": "4.17.x"
   },
   "devDependencies": {
     "blanket-node": "2.0.0",
-    "chai": "4.0.x",
-    "coffee-script": "1.12.x",
-    "coffeelint": "1.16.x",
+    "chai": "4.1.x",
+    "coffee-script": "1.x.x",
+    "coffeelint": "2.1.x",
     "coffeelint-use-strict": "1.0.0",
     "david": "11.0.x",
-    "mocha": "3.4.x",
+    "mocha": "5.0.x",
     "travis-cov": "0.2.5"
   }
 }
