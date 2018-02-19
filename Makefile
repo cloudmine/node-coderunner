@@ -39,7 +39,7 @@ travis-cov:
 	@./node_modules/mocha/bin/_mocha \
 	--exit \
 	--require coffee-script/register \
-	--require ./node_modules/blanket-node/bin/index.js \
+	--require blanket \
 	-R travis-cov \
 	./test/unit/*.coffee \
 	./test/integration/*.coffee

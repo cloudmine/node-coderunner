@@ -34,7 +34,7 @@
     "lodash": "4.17.x"
   },
   "devDependencies": {
-    "blanket-node": "2.0.0",
+    "blanket": "1.2.x",
     "chai": "4.1.x",
     "coffee-script": "1.x.x",
     "coffeelint": "2.1.x",
