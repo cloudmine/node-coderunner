@@ -9,14 +9,16 @@ run:
 
 unit:
 	./node_modules/mocha/bin/_mocha \
-	--compilers coffee:coffee-script/register \
-	./test/unit
+	--exit \
+	--require coffee-script/register \
+	./test/unit/**/*.coffee
 
 
 integration:
 	./node_modules/mocha/bin/_mocha \
-	--compilers coffee:coffee-script/register \
-	./test/integration
+	--exit \
+	--require coffee-script/register \
+	./test/integration/**/*.coffee
 
 test:
 	$(MAKE) unit
@@ -35,11 +37,12 @@ lint:
 
 travis-cov:
 	@./node_modules/mocha/bin/_mocha \
-	--compilers coffee:coffee-script/register \
-	--require ./node_modules/blanket-node/bin/index.js \
+	--exit \
+	--require coffee-script/register \
+	--require blanket \
 	-R travis-cov \
-	./test/unit \
-	./test/integration
+	./test/unit/*.coffee \
+	./test/integration/*.coffee
 
 check-dependencies:
 	@./node_modules/david/bin/david.js
