@@ -1,9 +1,9 @@
 {
   "author": "CloudMine, Inc.",
   "name": "cloudmine-servercode",
-  "description": "A Way to run Node.js apps on CloudMine's Internal Platform",
-  "version": "1.2.0",
-  "homepage": "https://cloudmine.me/",
+  "description": "A Way to run Node.js apps on CloudMine's Logic Engine",
+  "version": "1.2.1",
+  "homepage": "https://cloudmine.io/",
   "license": "MIT",
   "main": "bin/server.js",
   "repository": {
